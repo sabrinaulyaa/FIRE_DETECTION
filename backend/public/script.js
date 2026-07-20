@@ -23,46 +23,31 @@ SUPABASE_KEY
 
 );
 
-async function simpanData(gasValue){
+async function simpanData(gasValue) {
 
-const {data,error}=
+    // Ambil data dengan aman
+    const flame =
+        document.getElementById("flame")?.innerHTML || "SAFE";
 
-await db
+    const status =
+        document.getElementById("sensorStatus")?.innerHTML || "AMAN";
 
-.from("fire_history")
+    // Simpan ke Supabase
+    const { error } = await db
+        .from("fire_history")
+        .insert([
+            {
+                flame: flame,
+                gas: gasValue,
+                status: status
+            }
+        ]);
 
-.insert([
-
-{
-
-flame:
-document.getElementById("flame").innerHTML,
-
-gas:gasValue,
-
-status:
-document.getElementById("sensorStatus").innerHTML
-
-}
-
-]);
-
-
-
-if(error){
-
-console.log(error);
-
-}
-
-else{
-
-console.log(
-"Berhasil tersimpan"
-);
-
-}
-
+    if (error) {
+        console.error("Supabase Error:", error);
+    } else {
+        console.log("✅ Data berhasil disimpan");
+    }
 }
 
 // ===============================
