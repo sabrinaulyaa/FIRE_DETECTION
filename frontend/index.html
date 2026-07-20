@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+<title>
+Fire Detection IoT Dashboard
+</title>
+
+
+
+<link rel="stylesheet" href="style.css">
+
+
+
+<!-- MQTT LIBRARY -->
+
+<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+
+
+
+<!-- CHART LIBRARY -->
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+
+</head>
+
+
+
+<body>
+
+
+
+<!-- =========================
+        SIDEBAR
+========================= -->
+
+
+<div class="sidebar">
+
+
+<h2>
+🔥 FIRE IoT
+</h2>
+
+
+
+<ul>
+
+
+<li class="active"
+onclick="openPage('dashboard',this)">
+
+🏠 Dashboard
+
+</li>
+
+
+
+<li onclick="openPage('history',this)">
+
+📜 History
+
+</li>
+
+
+
+<li onclick="openPage('setting',this)">
+
+⚙ Setting
+
+</li>
+
+
+
+<li onclick="openPage('grafik',this)">
+
+📈 Grafik
+
+</li>
+
+
+
+<li onclick="openPage('about',this)">
+
+👩‍💻 About
+
+</li>
+
+
+
+</ul>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<!-- =========================
+        MAIN
+========================= -->
+
+
+<div class="main">
+
+
+
+<header>
+
+
+<h1>
+
+Fire Detection Monitoring
+
+</h1>
+
+
+
+<div class="connection">
+
+
+<span id="connectionDot"></span>
+
+
+<span id="status">
+
+OFFLINE
+
+</span>
+
+
+</div>
+
+
+
+</header>
+
+
+
+
+
+
+
+
+
+<!-- =========================
+        DASHBOARD
+========================= -->
+
+
+<section id="dashboard" class="page active">
+
+
+
+<div class="cards">
+
+
+
+<div class="card fire">
+
+<h3>
+🔥 Flame Sensor
+</h3>
+
+
+<p id="flame">
+
+SAFE
+
+</p>
+
+
+</div>
+
+
+
+
+
+<div class="card gas">
+
+
+<h3>
+💨 MQ-2 Gas
+</h3>
+
+
+<p id="gas">
+
+0 ppm
+
+</p>
+
+
+</div>
+
+
+
+
+
+<div class="card time">
+
+
+<h3>
+🕒 Time
+</h3>
+
+
+<p id="clock">
+
+00:00:00
+
+</p>
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+<div class="panel">
+
+
+<h2>
+Realtime Monitoring
+</h2>
+
+
+<p>
+ESP32 Fire Detection System
+</p>
+
+
+<br>
+
+
+<div class="status-box">
+
+<h3>
+Status Sistem
+</h3>
+
+
+<h1 id="sensorStatus">
+
+AMAN
+
+</h1>
+
+
+</div>
+
+
+
+</div>
+
+
+
+</section>
+
+<!-- =========================
+        HISTORY
+========================= -->
+
+
+<section id="history" class="page">
+
+
+<div class="panel">
+
+
+<h2>
+📜 History Sensor
+</h2>
+
+
+
+
+<table>
+
+
+<thead>
+
+<tr>
+
+<th>
+Time
+</th>
+
+
+<th>
+Flame
+</th>
+
+
+<th>
+Gas
+</th>
+
+
+<th>
+Status
+</th>
+
+
+</tr>
+
+</thead>
+
+
+
+<tbody id="historyData">
+
+
+</tbody>
+
+
+
+</table>
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+
+
+
+
+<!-- =========================
+        SETTING
+========================= -->
+
+
+<section id="setting" class="page">
+
+
+<div class="panel">
+
+
+<h2>
+⚙ Setting
+</h2>
+
+
+
+
+<div class="setting">
+
+
+<label>
+Gas Limit
+</label>
+
+
+
+<input 
+id="gasLimit"
+type="number"
+value="300">
+
+
+</div>
+
+
+
+
+
+<div class="setting">
+
+
+<label>
+Alarm
+</label>
+
+
+<select id="alarmMode">
+
+
+<option>
+ON
+</option>
+
+
+<option>
+OFF
+</option>
+
+
+</select>
+
+
+</div>
+
+
+
+
+
+<button class="saveBtn"
+onclick="saveSetting()">
+
+SAVE
+
+</button>
+
+
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+
+
+
+
+<!-- =========================
+        GRAFIK
+========================= -->
+
+
+<section id="grafik" class="page">
+
+
+<div class="panel">
+
+
+<h2>
+📈 Grafik MQ-2 Realtime
+</h2>
+
+
+
+<canvas id="sensorChart"></canvas>
+
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+
+
+
+
+<!-- =========================
+        ABOUT
+========================= -->
+
+
+<section id="about" class="page">
+
+
+<div class="panel profile">
+
+
+<h2>
+👩‍💻 About Developer
+</h2>
+
+
+
+<div class="developer-card">
+
+
+<h1>
+🔥 Fire Detection IoT
+</h1>
+
+
+
+<p>
+Smart Fire Monitoring System
+</p>
+
+
+
+<h3>
+Dibuat Oleh:
+</h3>
+
+
+
+<div class="name">
+
+Sabrina Ulya Sisviandra
+
+</div>
+
+
+
+<div class="name">
+
+Stiffen Dicfy Nofery
+
+</div>
+
+
+
+
+<br>
+
+
+
+<p>
+
+Teknik Elektronika Industri
+
+<br><br>
+
+ESP32 + Flame Sensor + MQ-2
+
+<br>
+
+MQTT Monitoring System
+
+</p>
+
+
+
+</div>
+
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+
+
+
+
+<!-- =========================
+        ALARM
+========================= -->
+
+
+<div id="alarmPopup">
+
+
+<div class="alarmBox">
+
+
+<h1>
+🔥 FIRE ALERT
+</h1>
+
+
+
+<p>
+Api Terdeteksi !!
+</p>
+
+
+
+<button onclick="closeAlarm()">
+
+CLOSE
+
+</button>
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+
+</html>

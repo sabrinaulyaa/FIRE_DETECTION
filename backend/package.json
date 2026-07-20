@@ -1,0 +1,19 @@
+{
+"name":"fire-detection",
+"version":"1.0.0",
+"main":"index.js",
+
+"scripts":{
+"start":"node index.js"
+},
+
+"dependencies":{
+
+"cors":"^2.8.5",
+"express":"^4.18.2",
+"mqtt":"^5.3.5",
+"socket.io":"^4.7.5"
+
+}
+
+}
