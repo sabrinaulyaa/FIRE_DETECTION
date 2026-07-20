@@ -9,8 +9,9 @@
 // ===========================
 
 
-const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_KEY = process.env.SUPABASE_KEY;
+const SUPABASE_URL = "https://bkkrbkfmjyacuyusxgyj.supabase.co";
+
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJra3Jia2ZtanlhY3V5dXN4Z3lqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ1NDQzNDEsImV4cCI6MjEwMDEyMDM0MX0.8L9toE6tYGDck8zxs8-Berz93j4TvFFD3X00oUTcIp8";
 
 
 const db =
