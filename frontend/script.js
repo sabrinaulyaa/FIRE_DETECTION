@@ -4,6 +4,70 @@
 ===================================== */
 
 
+// ===========================
+// SUPABASE CONNECTION
+// ===========================
+
+
+const SUPABASE_URL = 
+"https://bkkrbkfmjyacuyusxgyj.supabase.co";
+
+
+const SUPABASE_KEY =
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJra3Jia2ZtanlhY3V5dXN4Z3lqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ1NDQzNDEsImV4cCI6MjEwMDEyMDM0MX0.8L9toE6tYGDck8zxs8-Berz93j4TvFFD3X00oUTcIp8";
+
+
+
+const db =
+supabase.createClient(
+
+SUPABASE_URL,
+
+SUPABASE_KEY
+
+);
+
+async function simpanData(gasValue){
+
+const {data,error}=
+
+await db
+
+.from("fire_history")
+
+.insert([
+
+{
+
+flame:
+document.getElementById("flame").innerHTML,
+
+gas:gasValue,
+
+status:
+document.getElementById("sensorStatus").innerHTML
+
+}
+
+]);
+
+
+
+if(error){
+
+console.log(error);
+
+}
+
+else{
+
+console.log(
+"Berhasil tersimpan"
+);
+
+}
+
+}
 
 // ===============================
 // SIDEBAR CONTROL
@@ -721,6 +785,11 @@ showAlarm();
             addHistory(
             data
             );
+
+            // SIMPAN KE SUPABASE
+simpanData(
+    Number(data)
+);
 
 
         }
