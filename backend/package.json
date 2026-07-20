@@ -1,19 +1,16 @@
 {
-"name":"fire-detection",
-"version":"1.0.0",
-"main":"index.js",
-
-"scripts":{
-"start":"node index.js"
-},
-
-"dependencies":{
-
-"cors":"^2.8.5",
-"express":"^4.18.2",
-"mqtt":"^5.3.5",
-"socket.io":"^4.7.5"
-
-}
-
+  "name": "fire-detection-backend",
+  "version": "1.0.0",
+  "description": "Fire Detection Backend",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.57.4",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "mqtt": "^5.3.5",
+    "socket.io": "^4.7.5"
+  }
 }

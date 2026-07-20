@@ -86,21 +86,14 @@ __dirname,
 // MQTT CONFIG
 // ================================
 
+const MQTT_BROKER = "mqtt://broker.hivemq.com";
 
-const MQTT_BROKER =
-"mqtt://broker.hivemq.com";
+// Subscribe semua topic fire/detection
+const MQTT_TOPIC = "fire/detection/#";
 
-
-
-const MQTT_TOPIC =
-"fire/detection";
+const mqttClient = mqtt.connect(MQTT_BROKER);
 
 
-
-const mqttClient =
-mqtt.connect(
-MQTT_BROKER
-);
 
 
 
@@ -112,31 +105,23 @@ MQTT_BROKER
 // MQTT CONNECT
 // ================================
 
+mqttClient.on("connect", () => {
 
-mqttClient.on(
-"connect",
-()=>{
+    console.log("MQTT Connected");
 
+    mqttClient.subscribe(MQTT_TOPIC, (err) => {
 
-console.log(
-"MQTT Connected"
-);
+        if (err) {
 
+            console.log("Subscribe gagal:", err);
 
+        } else {
 
-mqttClient.subscribe(
-MQTT_TOPIC,
-()=>{
+            console.log("Subscribe:", MQTT_TOPIC);
 
+        }
 
-console.log(
-"Subscribe:",
-MQTT_TOPIC
-);
-
-
-});
-
+    });
 
 });
 
@@ -250,33 +235,13 @@ console.log(
 // SERVER START
 // ================================
 
+const PORT = process.env.PORT || 3000;
 
-const PORT = 3000;
+server.listen(PORT, () => {
 
-
-server.listen(
-PORT,
-()=>{
-
-
-console.log(
-"================================"
-);
-
-
-console.log(
-" FIRE DETECTION SERVER "
-);
-
-
-console.log(
-` http://localhost:${PORT}`
-);
-
-
-console.log(
-"================================"
-);
-
+    console.log("================================");
+    console.log(" FIRE DETECTION SERVER ");
+    console.log(` Running on Port : ${PORT}`);
+    console.log("================================");
 
 });
