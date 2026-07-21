@@ -638,7 +638,7 @@ return;
 }
 
 
-
+console.log(data);
 
 updateDashboard(data);
 
@@ -675,9 +675,12 @@ data.status || "AMAN";
 
 
 
-const danger =
-flame===1 ||
-status!=="AMAN";
+const statusClean = String(status)
+.trim()
+.toUpperCase();
+
+const isFire = flame === 1;
+const isGasWarning = statusClean === "WASPADA GAS";
 
 
 
@@ -740,24 +743,21 @@ gas+" ppm";
 // STATUS
 
 
-const statusEl =
-document.getElementById(
-"sensorStatus"
-);
-
-
+const statusEl = document.getElementById("sensorStatus");
 
 if(statusEl){
 
-statusEl.innerHTML =
-status;
+    statusEl.innerHTML = status;
 
-
-statusEl.style.color =
-danger?
-"#e74c3c":
-"#2ecc71";
-
+    if(isFire){
+        statusEl.style.color = "#e74c3c"; // 🔴 merah
+    }
+    else if(isGasWarning){
+        statusEl.style.color = "#f39c12"; // 🟡 kuning
+    }
+    else{
+        statusEl.style.color = "#2ecc71"; // 🟢 hijau
+    }
 
 }
 
@@ -811,36 +811,24 @@ gas
 
 
 
-// ALARM MODE
+// ===============================
+// ALARM MODE (FORCE FIX)
+// ===============================
 
 
-const alarmMode =
-document.getElementById(
-"alarmMode"
-);
+if(flame === 1){
 
+    console.log("🔥 API TERDETEKSI -> POPUP ON");
 
+    showAlarm("🔥 BAHAYA API TERDETEKSI!");
 
-if(
-danger &&
-(!alarmMode ||
-alarmMode.value==="ON")
-){
+}else{
 
+    console.log("✅ AMAN / GAS -> NO POPUP");
 
-showAlarm(status);
-
+    closeAlarm();
 
 }
-else{
-
-
-closeAlarm();
-
-
-}
-
-
 
 }
 
