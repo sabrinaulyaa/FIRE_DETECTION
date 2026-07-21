@@ -103,8 +103,7 @@ origin:"*"
 //====================================
 
 
-const MQTT_SERVER =
-"mqtt://broker.hivemq.com";
+const MQTT_SERVER = "mqtt://broker.emqx.io:1883";
 
 
 const MQTT_TOPIC =
