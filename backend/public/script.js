@@ -824,7 +824,7 @@ if(flame === 1){
 
 }else{
 
-    console.log("✅ AMAN / GAS -> NO POPUP");
+    console.log("✅ AMAN -> NO POPUP");
 
     closeAlarm();
 
