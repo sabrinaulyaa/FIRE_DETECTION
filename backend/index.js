@@ -12,7 +12,6 @@ const http = require("http");
 const cors = require("cors");
 const mqtt = require("mqtt");
 const path = require("path");
-const {Server} = require("socket.io");
 require("dotenv").config();
 
 const {createClient} =
@@ -85,15 +84,7 @@ http.createServer(app);
 
 
 
-const io =
-new Server(
-server,
-{
-cors:{
-origin:"*"
-}
-}
-);
+
 
 
 
@@ -213,15 +204,7 @@ data
 
 
 
-//=============================
-// SOCKET REALTIME
-//=============================
 
-
-io.emit(
-"sensorData",
-data
-);
 
 
 
@@ -305,37 +288,7 @@ err.message
 
 
 
-//====================================
-// SOCKET CONNECTION
-//====================================
 
-
-io.on(
-"connection",
-(socket)=>{
-
-
-console.log(
-"Dashboard connect:",
-socket.id
-);
-
-
-
-socket.on(
-"disconnect",
-()=>{
-
-
-console.log(
-"Dashboard disconnect"
-);
-
-
-});
-
-
-});
 
 
 
