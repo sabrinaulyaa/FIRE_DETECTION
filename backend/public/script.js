@@ -1,113 +1,85 @@
-/* =====================================
-      FIRE DETECTION IoT DASHBOARD
-      FINAL JAVASCRIPT
-===================================== */
+/*
+====================================================
+ FIRE DETECTION IoT DASHBOARD FINAL
+ ESP32 + HiveMQ + Railway + Supabase
+====================================================
+*/
 
-
-// ===========================
-// SUPABASE CONNECTION
-// ===========================
-
-
-const SUPABASE_URL = "https://bkkrbkfmjyacuyusxgyj.supabase.co";
-
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJra3Jia2ZtanlhY3V5dXN4Z3lqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ1NDQzNDEsImV4cCI6MjEwMDEyMDM0MX0.8L9toE6tYGDck8zxs8-Berz93j4TvFFD3X00oUTcIp8";
-
-
-const db =
-supabase.createClient(
-
-SUPABASE_URL,
-
-SUPABASE_KEY
-
-);
-
-async function simpanData(gasValue) {
-
-    // Ambil data dengan aman
-    const flame =
-        document.getElementById("flame")?.innerHTML || "SAFE";
-
-    const status =
-        document.getElementById("sensorStatus")?.innerHTML || "AMAN";
-
-    // Simpan ke Supabase
-    const { error } = await db
-        .from("fire_history")
-        .insert([
-            {
-                flame: flame,
-                gas: gasValue,
-                status: status
-            }
-        ]);
-
-    if (error) {
-        console.error("Supabase Error:", error);
-    } else {
-        console.log("✅ Data berhasil disimpan");
-    }
-}
 
 // ===============================
-// SIDEBAR CONTROL
+// SIDEBAR
 // ===============================
 
+function openPage(pageId, element){
 
-function openPage(pageName, element){
-
-
-    let pages =
-    document.querySelectorAll(".page");
-
-
-    pages.forEach(page=>{
-
+    document.querySelectorAll(".page")
+    .forEach(page=>{
         page.classList.remove("active");
-
     });
 
 
-
-    let target =
-    document.getElementById(pageName);
-
+    const page =
+    document.getElementById(pageId);
 
 
-    if(target){
-
-        target.classList.add("active");
-
+    if(page){
+        page.classList.add("active");
     }
 
 
-
-
-    let menus =
-    document.querySelectorAll(".sidebar li");
-
-
-
-    menus.forEach(menu=>{
-
-        menu.classList.remove("active");
-
+    document.querySelectorAll(".sidebar li")
+    .forEach(li=>{
+        li.classList.remove("active");
     });
-
 
 
     if(element){
-
         element.classList.add("active");
-
     }
-
 
 }
 
 
 
+
+
+// ===============================
+// SETTING
+// ===============================
+
+
+const gasLimitInput =
+document.getElementById("gasLimit");
+
+
+if(gasLimitInput){
+
+    gasLimitInput.value =
+    localStorage.getItem("gasLimit") || 300;
+
+}
+
+
+
+function saveSetting(){
+
+    if(gasLimitInput){
+
+        localStorage.setItem(
+            "gasLimit",
+            gasLimitInput.value
+        );
+
+
+        alert(
+            "Gas limit tersimpan : "+
+            gasLimitInput.value+
+            " ppm"
+        );
+
+    }
+
+}
 
 
 
@@ -121,746 +93,32 @@ function openPage(pageName, element){
 
 function updateClock(){
 
-
-    let now = new Date();
-
-
-
-    let time =
-
-    now.getHours()
-    .toString()
-    .padStart(2,"0")
-
-    +
-
-    ":"
-
-    +
-
-    now.getMinutes()
-    .toString()
-    .padStart(2,"0")
-
-    +
-
-    ":"
-
-    +
-
-    now.getSeconds()
-    .toString()
-    .padStart(2,"0");
-
-
-
-    let clock =
+    const clock =
     document.getElementById("clock");
-
 
 
     if(clock){
 
-        clock.innerHTML=time;
+        clock.innerHTML =
+        new Date()
+        .toLocaleTimeString(
+            "id-ID",
+            {
+                hour12:false
+            }
+        );
 
     }
-
 
 }
 
 
-
-setInterval(updateClock,1000);
+setInterval(
+updateClock,
+1000
+);
 
 updateClock();
-
-
-
-
-
-
-
-
-
-// ===============================
-// CHART SETUP
-// ===============================
-
-
-let sensorChart = null;
-
-
-let chartTime=[];
-
-
-let chartGas=[];
-
-
-
-
-
-function initChart(){
-
-
-    let canvas =
-    document.getElementById("sensorChart");
-
-
-
-    if(!canvas){
-
-        console.log("Chart tidak ditemukan");
-
-        return;
-
-    }
-
-
-
-    let ctx =
-    canvas.getContext("2d");
-
-
-
-
-    sensorChart = new Chart(ctx,{
-
-
-
-        type:"line",
-
-
-
-        data:{
-
-
-            labels:chartTime,
-
-
-            datasets:[{
-
-                label:"MQ-2 Gas ppm",
-
-                data:chartGas,
-
-                borderWidth:3,
-
-                tension:0.4
-
-            }]
-
-
-        },
-
-
-
-        options:{
-
-
-            responsive:true,
-
-
-            plugins:{
-
-
-                legend:{
-
-
-                    labels:{
-
-
-                        color:"white"
-
-
-                    }
-
-
-                }
-
-
-            },
-
-
-
-            scales:{
-
-
-                x:{
-
-
-                    ticks:{
-
-
-                        color:"white"
-
-                    }
-
-                },
-
-
-
-                y:{
-
-
-                    ticks:{
-
-
-                        color:"white"
-
-                    }
-
-
-                }
-
-
-
-            }
-
-
-        }
-
-
-
-    });
-
-
-
-}
-
-
-
-
-
-
-
-
-
-function updateChart(value){
-
-
-
-    if(!sensorChart){
-
-        return;
-
-    }
-
-
-
-    let waktu =
-    new Date()
-    .toLocaleTimeString();
-
-
-
-    chartTime.push(waktu);
-
-
-
-    chartGas.push(value);
-
-
-
-
-    if(chartTime.length > 15){
-
-
-        chartTime.shift();
-
-
-        chartGas.shift();
-
-
-    }
-
-
-
-    sensorChart.update();
-
-
-
-}
-
-
-
-
-
-
-
-
-
-// ===============================
-// MQTT CONNECTION
-// ===============================
-
-
-let mqttClient = null;
-
-
-
-
-function startMQTT(){
-
-
-
-    if(typeof mqtt === "undefined"){
-
-
-        console.log(
-        "MQTT library tidak tersedia"
-        );
-
-
-        return;
-
-    }
-
-
-
-
-
-
-    const broker =
-
-    "wss://broker.hivemq.com:8884/mqtt";
-
-
-
-
-
-
-    mqttClient = mqtt.connect(broker);
-
-
-
-
-
-
-
-    mqttClient.on("connect",()=>{
-
-
-        console.log(
-        "MQTT CONNECTED"
-        );
-
-
-
-        let status =
-        document.getElementById("status");
-
-
-
-        if(status){
-
-            status.innerHTML="ONLINE";
-
-        }
-
-
-
-        let dot =
-        document.getElementById("connectionDot");
-
-
-
-        if(dot){
-
-            dot.style.background="#00ff88";
-
-        }
-
-
-
-
-
-        mqttClient.subscribe(
-        "fire/detection/flame"
-        );
-
-        mqttClient.subscribe(
-        "fire/detection/gas"
-        );
-
-        mqttClient.subscribe(
-        "fire/detection/status"
-      );
-
-
-
-    });
-
-
-
-
-
-
-
-
-
-    mqttClient.on("error",(err)=>{
-
-
-        console.log(
-        "MQTT ERROR",
-        err
-        );
-
-
-    });
-
-
-
-
-
-
-
-    mqttClient.on("offline",()=>{
-
-
-        let status =
-        document.getElementById("status");
-
-
-        if(status){
-
-            status.innerHTML="OFFLINE";
-
-        }
-
-
-
-
-        let dot =
-        document.getElementById("connectionDot");
-
-
-
-        if(dot){
-
-            dot.style.background="red";
-
-        }
-
-
-
-    });
-
-
-
-
-
-
-
-
-
-    mqttClient.on(
-    "message",
-    function(topic,message){
-
-// =====================
-// STATUS SYSTEM
-// =====================
-
-
-if(topic==="fire/detection/status"){
-
-
-
-let status =
-message.toString();
-
-
-
-let display =
-document.getElementById(
-"sensorStatus"
-);
-
-
-
-
-if(!display){
-
-return;
-
-}
-
-
-
-
-display.innerHTML =
-status;
-
-
-
-
-
-display.className="";
-
-
-
-
-
-if(status==="AMAN"){
-
-
-
-display.classList.add(
-"status-safe"
-);
-
-
-
-}
-
-
-
-
-
-else if(status==="WASPADA GAS"){
-
-
-
-display.classList.add(
-"status-warning"
-);
-
-
-
-}
-
-
-
-
-else if(status==="BAHAYA API"){
-
-
-
-display.classList.add(
-"status-danger"
-);
-
-
-
-showAlarm();
-
-
-
-}
-
-
-
-
-}
-
-
-        let data =
-        message.toString();
-
-
-
-
-
-        // =====================
-        // FLAME
-        // =====================
-
-
-        if(topic==="fire/detection/flame"){
-
-
-
-            let flame =
-            document.getElementById("flame");
-
-
-
-            let status =
-            document.getElementById("sensorStatus");
-
-
-
-
-
-            if(data==="FIRE"){
-
-
-
-                flame.innerHTML=
-                "🔥 FIRE";
-
-
-
-                status.innerHTML=
-                "BAHAYA";
-
-
-
-                status.style.color="red";
-
-
-
-                showAlarm();
-
-
-
-            }
-
-
-
-            else{
-
-
-
-                flame.innerHTML=
-                "SAFE";
-
-
-
-                status.style.color="#00ff88";
-
-
-            }
-
-
-
-        }
-
-
-
-
-
-
-
-        // =====================
-        // MQ2
-        // =====================
-
-
-
-        if(topic==="fire/detection/gas"){
-
-
-
-            let gas =
-            document.getElementById("gas");
-
-
-
-            if(gas){
-
-                gas.innerHTML=
-                data+" ppm";
-
-            }
-
-
-
-            updateChart(
-            Number(data)
-            );
-
-
-
-            addHistory(
-            data
-            );
-
-            // SIMPAN KE SUPABASE
-simpanData(
-    Number(data)
-);
-
-
-        }
-
-
-
-    });
-
-
-
-}
-
-
-
-
-
-
-
-
-
-// ===============================
-// HISTORY
-// ===============================
-
-
-
-function addHistory(gas){
-
-
-
-    let table =
-    document.getElementById("historyData");
-
-
-
-    if(!table){
-
-        return;
-
-    }
-
-
-
-
-
-    let row =
-    table.insertRow(0);
-
-
-
-    row.insertCell(0)
-    .innerHTML =
-    new Date()
-    .toLocaleTimeString();
-
-
-
-
-    row.insertCell(1)
-    .innerHTML =
-    document
-    .getElementById("flame")
-    .innerHTML;
-
-
-
-
-    row.insertCell(2)
-    .innerHTML =
-    gas+" ppm";
-
-
-
-
-    row.insertCell(3)
-    .innerHTML =
-    gas > 300
-    ?
-
-    "BAHAYA"
-
-    :
-
-    "NORMAL";
-
-
-
-}
-
-
 
 
 
@@ -873,18 +131,34 @@ function addHistory(gas){
 // ===============================
 
 
-
-function showAlarm(){
-
-
-    let popup =
-    document.getElementById("alarmPopup");
+const alarmPopup =
+document.getElementById(
+"alarmPopup"
+);
 
 
 
-    if(popup){
+function showAlarm(message){
 
-        popup.style.display="flex";
+
+    if(alarmPopup){
+
+        alarmPopup.style.display =
+        "flex";
+
+    }
+
+
+    const text =
+    document.getElementById(
+    "alarmText"
+    );
+
+
+    if(text){
+
+        text.innerHTML =
+        message;
 
     }
 
@@ -896,18 +170,594 @@ function showAlarm(){
 
 function closeAlarm(){
 
+    if(alarmPopup){
 
-    let popup =
-    document.getElementById("alarmPopup");
-
-
-
-    if(popup){
-
-        popup.style.display="none";
+        alarmPopup.style.display =
+        "none";
 
     }
 
+}
+
+
+
+if(alarmPopup){
+
+alarmPopup.style.display="none";
+
+}
+
+
+
+
+
+// ===============================
+// CHART
+// ===============================
+
+
+let sensorChart;
+
+
+const canvas =
+document.getElementById(
+"sensorChart"
+);
+
+
+
+if(canvas){
+
+
+sensorChart =
+new Chart(
+canvas.getContext("2d"),
+{
+
+type:"line",
+
+data:{
+
+labels:[],
+
+datasets:[{
+
+label:"MQ-2 Gas ppm",
+
+data:[],
+
+tension:0.3,
+
+fill:true
+
+}]
+
+},
+
+
+options:{
+
+responsive:true,
+
+animation:false,
+
+scales:{
+
+y:{
+beginAtZero:true
+}
+
+}
+
+}
+
+
+});
+
+
+}
+
+
+
+
+function updateChart(time,value){
+
+
+if(!sensorChart)
+return;
+
+
+sensorChart.data.labels.push(time);
+
+
+sensorChart.data.datasets[0]
+.data.push(value);
+
+
+
+if(
+sensorChart.data.labels.length>20
+){
+
+sensorChart.data.labels.shift();
+
+sensorChart.data.datasets[0]
+.data.shift();
+
+}
+
+
+
+sensorChart.update();
+
+
+}
+
+
+
+
+
+
+
+// ===============================
+// HISTORY
+// ===============================
+
+
+const historyBody =
+document.getElementById(
+"historyData"
+);
+
+
+
+function addHistory(
+time,
+flame,
+gas,
+status
+){
+
+
+if(!historyBody)
+return;
+
+
+const row =
+document.createElement(
+"tr"
+);
+
+
+
+row.innerHTML=`
+
+<td>${time}</td>
+<td>${flame}</td>
+<td>${gas} ppm</td>
+<td>${status}</td>
+
+`;
+
+
+
+historyBody.prepend(row);
+
+
+
+if(historyBody.rows.length>50){
+
+historyBody.deleteRow(50);
+
+}
+
+
+}
+
+
+
+
+
+
+
+// ===============================
+// LOAD SUPABASE HISTORY
+// ===============================
+
+
+async function loadHistory(){
+
+
+try{
+
+
+const response =
+await fetch("/history");
+
+
+
+const data =
+await response.json();
+
+
+
+data.reverse()
+.forEach(item=>{
+
+
+addHistory(
+
+new Date(
+item.created_at
+)
+.toLocaleTimeString(
+"id-ID",
+{
+hour12:false
+}
+),
+
+
+item.flame==1?
+"FIRE":
+"SAFE",
+
+
+item.gas,
+
+
+item.status
+
+
+);
+
+
+});
+
+
+
+}
+catch(error){
+
+console.log(
+"History gagal",
+error
+);
+
+}
+
+
+}
+
+
+
+loadHistory();
+
+
+
+
+
+
+
+// ===============================
+// CONNECTION STATUS
+// ===============================
+
+
+const dot =
+document.getElementById(
+"connectionDot"
+);
+
+
+const status =
+document.getElementById(
+"status"
+);
+
+
+
+function setConnection(state){
+
+
+if(status){
+
+status.innerHTML =
+state?
+"ONLINE":
+"OFFLINE";
+
+}
+
+
+
+if(dot){
+
+dot.style.background =
+state?
+"#2ecc71":
+"#e74c3c";
+
+
+dot.style.width="10px";
+
+dot.style.height="10px";
+
+dot.style.borderRadius="50%";
+
+dot.style.display="inline-block";
+
+}
+
+
+}
+
+
+setConnection(false);
+
+
+
+
+
+
+
+
+// ===============================
+// MQTT HIVEMQ
+// ===============================
+
+
+const MQTT_URL =
+"wss://broker.hivemq.com:8000/mqtt";
+
+
+
+const MQTT_TOPIC =
+"fire/detection";
+
+
+
+
+
+const mqttClient =
+mqtt.connect(
+MQTT_URL,
+{
+
+clientId:
+"fire-dashboard-"+
+Math.random()
+.toString(16)
+.substring(2),
+
+
+clean:true,
+
+
+reconnectPeriod:3000
+
+
+});
+
+
+
+
+
+
+mqttClient.on(
+"connect",
+()=>{
+
+
+console.log(
+"MQTT CONNECTED"
+);
+
+
+
+setConnection(true);
+
+
+
+mqttClient.subscribe(
+MQTT_TOPIC
+);
+
+
+
+});
+
+
+
+
+
+mqttClient.on(
+"close",
+()=>{
+
+setConnection(false);
+
+});
+
+
+
+
+mqttClient.on(
+"error",
+err=>{
+
+console.log(
+"MQTT ERROR",
+err
+);
+
+setConnection(false);
+
+});
+
+
+
+
+
+
+
+
+// ===============================
+// RECEIVE SENSOR
+// ===============================
+
+
+mqttClient.on(
+"message",
+(topic,message)=>{
+
+
+if(topic!==MQTT_TOPIC)
+return;
+
+
+
+let data;
+
+
+try{
+
+
+data =
+JSON.parse(
+message.toString()
+);
+
+
+}
+
+catch(e){
+
+return;
+
+}
+
+
+
+
+updateDashboard(data);
+
+
+
+});
+
+
+
+
+
+
+
+// ===============================
+// UPDATE DASHBOARD
+// ===============================
+
+
+function updateDashboard(data){
+
+
+
+const flame =
+Number(data.flame);
+
+
+const gas =
+Number(data.gas)||0;
+
+
+
+const status =
+data.status || "AMAN";
+
+
+
+const danger =
+flame===1 ||
+status!=="AMAN";
+
+
+
+
+
+
+// FLAME
+
+
+const flameEl =
+document.getElementById(
+"flame"
+);
+
+
+
+if(flameEl){
+
+flameEl.innerHTML =
+flame?
+"🔥 FIRE!":
+"SAFE";
+
+
+flameEl.style.color =
+flame?
+"#e74c3c":
+"#2ecc71";
+
+
+}
+
+
+
+
+
+// GAS
+
+
+const gasEl =
+document.getElementById(
+"gas"
+);
+
+
+
+if(gasEl){
+
+gasEl.innerHTML =
+gas+" ppm";
+
+}
+
+
+
+
+
+
+
+// STATUS
+
+
+const statusEl =
+document.getElementById(
+"sensorStatus"
+);
+
+
+
+if(statusEl){
+
+statusEl.innerHTML =
+status;
+
+
+statusEl.style.color =
+danger?
+"#e74c3c":
+"#2ecc71";
+
 
 }
 
@@ -918,37 +768,77 @@ function closeAlarm(){
 
 
 
-
-// ===============================
-// SETTING
-// ===============================
-
-
-
-function saveSetting(){
-
-
-
-    let limit =
-    document
-    .getElementById("gasLimit")
-    .value;
+const time =
+new Date()
+.toLocaleTimeString(
+"id-ID",
+{
+hour12:false
+}
+);
 
 
 
-    alert(
 
-    "Gas limit tersimpan : "
 
-    +
 
-    limit
+addHistory(
 
-    +
+time,
 
-    " ppm"
+flame?
+"FIRE":
+"SAFE",
 
-    );
+gas,
+
+status
+
+);
+
+
+
+
+
+updateChart(
+time,
+gas
+);
+
+
+
+
+
+
+
+// ALARM MODE
+
+
+const alarmMode =
+document.getElementById(
+"alarmMode"
+);
+
+
+
+if(
+danger &&
+(!alarmMode ||
+alarmMode.value==="ON")
+){
+
+
+showAlarm(status);
+
+
+}
+else{
+
+
+closeAlarm();
+
+
+}
 
 
 
@@ -956,33 +846,6 @@ function saveSetting(){
 
 
 
-
-
-
-
-
-
-// ===============================
-// START
-// ===============================
-
-
-window.onload=function(){
-
-
-
-    console.log(
-    "🔥 Dashboard Ready"
-    );
-
-
-
-    initChart();
-
-
-
-    startMQTT();
-
-
-
-};
+console.log(
+"🔥 Fire Detection Dashboard Ready"
+);

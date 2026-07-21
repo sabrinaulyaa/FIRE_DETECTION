@@ -3,6 +3,8 @@
 
 <head>
 
+        <meta http-equiv="Cache-Control" content="no-cache">
+
 <meta charset="UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,6 +13,8 @@
 <title>
 Fire Detection IoT Dashboard
 </title>
+
+<link rel="icon" href="data:,">
 
 
 
@@ -252,21 +256,18 @@ ESP32 Fire Detection System
 <br>
 
 
-<div class="status-box">
-
 <h3>
-Status Sistem
-</h3>
 
+Status :
 
-<h1 id="sensorStatus">
+<span id="sensorStatus">
 
 AMAN
 
-</h1>
+</span>
 
 
-</div>
+</h3>
 
 
 
@@ -275,6 +276,14 @@ AMAN
 
 
 </section>
+
+
+
+
+
+
+
+
 
 <!-- =========================
         HISTORY
@@ -585,7 +594,7 @@ MQTT Monitoring System
 
 
 
-<p>
+<p id="alarmText">
 Api Terdeteksi !!
 </p>
 
@@ -611,7 +620,6 @@ CLOSE
 
 
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script src="script.js"></script>
 
