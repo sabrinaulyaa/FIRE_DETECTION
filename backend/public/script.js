@@ -431,7 +431,7 @@ error
 
 
 
-loadHistory();
+// loadHistory(); // DISABLE dulu
 
 
 
@@ -508,7 +508,7 @@ setConnection(false);
 
 
 const MQTT_URL =
-"wss://broker.hivemq.com:8000/mqtt";
+"wss://broker.emqx.io:8084/mqtt";
 
 
 
